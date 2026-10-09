@@ -202,7 +202,7 @@ def risks() -> str:
         [chip("p0", "High"), "Installs need egress that does not exist yet", "With <code>SANDBOX_NETWORK_MODE=none</code> no dependency can be installed, so nothing can be validated. The internal network plus allowlisting proxy is infrastructure that was never provisioned or tested here."],
         [chip("p0", "High"), "Never run against real systems", "LLM, Teams, JIRA, Confluence, AWS Secrets Manager and your GitHub organisation have only been faked. Expect schema, auth and naming differences. Run the live contract tests first."],
         [chip("p0", "High"), "LangGraph will block unregistered checkpoint types", "Every run logs <i>\"Deserializing unregistered type src.agent.state.FileChange … will be blocked in a future version\"</i>. When that becomes default, resuming any job with a saved <code>FileChange</code> or <code>TestResult</code> fails. Register them via <code>allowed_msgpack_modules</code> (or <code>LANGGRAPH_STRICT_MSGPACK</code> settings)."],
-        [chip("p0", "High"), "Not a git repository", "There is no version control, remote, CI or branch protection for this project yet. <code>.gitignore</code> already excludes <code>.env</code>, <code>.venv/</code>, <code>.tools/</code> and <code>eval-report.json</code>."],
+        [chip("p0", "High"), "Public repository with no CI or protection", "The code is public at <code>github.com/priyanshu2510/SACVE</code> (branch <code>main</code>, one commit) with no CI, branch protection, license or dependency/secret scanning configured. <code>.gitignore</code> excludes <code>.env</code>, <code>.venv/</code>, <code>.tools/</code> and <code>eval-report.json</code>; check that nothing else sensitive is ever added."],
         [chip("p1", "Medium"), "Only Python 3.12 repositories validate", "The sandbox runs Python 3.12. A repo pinned to an older stack (for example urllib3 1.26.4) fails its baseline and is reported BASELINE_FAILING. The sandbox should pick the repo's Python version."],
         [chip("p1", "Medium"), "Unsupported pip manifests", "The SBOM accepts <code>Pipfile</code>, <code>poetry.lock</code> and similar files, but the installer supports only <code>requirements*.txt</code> and <code>pyproject.toml</code>/<code>setup.py</code>/<code>setup.cfg</code>; the rest fail with \"unsupported pip manifest\". A lockfile-only change by section replacement is also unlikely to be correct."],
         [chip("p1", "Medium"), "Stale vulnerability database", "Grype's database is baked into the image. If the image is not rebuilt, new CVEs are not detected and a fix can be wrongly declared complete."],
@@ -230,7 +230,7 @@ def risks() -> str:
 
 def backlog() -> str:
     items = [
-        ("p0", "Put the project under version control", "git init, remote, branch protection, CODEOWNERS for this repo, first commit. Keep secrets, <code>.venv</code>, <code>.tools</code> out.", "S", "—"),
+        ("p0", "Protect the public repository", "Branch protection on <code>main</code>, a license (a public repo without one is all rights reserved), CODEOWNERS, Dependabot and GitHub secret scanning. Decide whether this hand-over document, which lists known weaknesses, should stay in a public repo.", "S", "GitHub settings"),
         ("p0", "Decide and build the production sandbox runtime", "Docker-in-Docker, dedicated Docker hosts, or Kubernetes Jobs with gVisor/Kata. Provision the internal egress network and the registry-allowlist proxy; set <code>SANDBOX_NETWORK_MODE=registry-allowlist</code>.", "L", "docker_sandbox.py"),
         ("p0", "Verify every integration with real credentials", "Run <code>CONTRACT_LIVE=1</code> with GitHub, JIRA, Confluence and LLM configured. Fix the Teams payload, JIRA priority/issue-type/status names, LLM response handling as needed.", "M", "tests/contract/"),
         ("p0", "Run the live evaluation", "<code>python -m tests.eval.run --mode live</code> against the real model; tune prompts until the gate (80%) passes. Add cases from real repos.", "M", "tests/eval/"),
@@ -261,7 +261,7 @@ def backlog() -> str:
     return section("left", "What is left", f"""
 <p><b>P0</b> = before the first production run ({n0} items). <b>P1</b> = needed for the specification's full scope or for safe operation at scale. <b>P2</b> = improvements. Sizes are rough: S about a day, M a few days, L a week or more.</p>
 {table(["Priority", "Item", "Size", "Where"], rows, compact=True)}
-{callout("ok", "Suggested order", "<p>Version control and CI first (so everything after is protected by the gate), then the real-credential verification and live evaluation (they decide how much of the rest changes), then the sandbox-runtime decision, then infrastructure and observability in parallel with the MCP adapter and npm.</p>")}""")
+{callout("ok", "Suggested order", "<p>Repository protection and CI first (so everything after is protected by the gate), then the real-credential verification and live evaluation (they decide how much of the rest changes), then the sandbox-runtime decision, then infrastructure and observability in parallel with the MCP adapter and npm.</p>")}""")
 
 
 TREE = [

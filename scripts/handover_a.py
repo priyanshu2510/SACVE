@@ -4,7 +4,8 @@ from __future__ import annotations
 
 from typing import Any
 
-from scripts.handover_lib import callout, chip, code, esc, flow, layer, pre, section, table, ul
+from scripts import handover_diagrams as DG
+from scripts.handover_lib import callout, chip, code, esc, section, table, ul
 
 
 def hero(f: dict[str, Any], today: str, suite: str) -> str:
@@ -46,7 +47,7 @@ def status(f: dict[str, Any]) -> str:
         ["Security and access", chip("partial"), "API key, IP allowlist, HMAC webhooks, secret redaction, sandbox hardening, supply-chain version check: done. AWS Secrets Manager provider exists but was only tested against a fake client. IAM, mTLS and PAT rotation are infrastructure work."],
         ["Safety and governance", chip("done"), "Global kill-switch, bot never merges, branch protection is <i>reported</i> (not enforced by the bot)."],
         ["Observability", chip("todo"), "No CloudWatch metrics, X-Ray tracing, alarms or SLO catalogue. <code>CLOUDWATCH_NAMESPACE</code> and <code>XRAY_ENABLED</code> exist as settings but nothing reads them. Logging is structured JSON with <code>job_id</code> correlation."],
-        ["CI/CD and infrastructure as code", chip("todo"), "No GitHub Actions, Terraform or Helm. The project is not even a git repository yet."],
+        ["CI/CD and infrastructure as code", chip("todo"), "No GitHub Actions, Terraform or Helm. The code is in git (public repository <code>priyanshu2510/SACVE</code>, branch <code>main</code>) but has no CI and no branch protection."],
         ["Quality and evaluation", chip("done"), "Golden-CVE evaluation harness with a release gate, and external-API contract tests including opt-in live checks. mypy/ruff gates (optional in the spec) are not set up."],
         ["Scale and idempotency", chip("done"), "Per-repo lock, cluster-wide sandbox cap (Redis), PR dedup, idempotency keys on every side effect, job-creation cap per run."],
         ["Data lifecycle", chip("partial"), "Keep-everything with mandatory redaction is implemented. Job logs are <b>not</b> written to S3 (<code>S3_BUCKET_LOGS</code> is unused). Backups and bucket versioning are infrastructure."],
@@ -63,15 +64,6 @@ def status(f: dict[str, Any]) -> str:
 
 def architecture(f: dict[str, Any]) -> str:
     v = f["versions"]
-    layers = (
-        layer("Triggers", [("Celery Beat", "02:00 SBOMs · 06:00 CVE feed · 07:00 Confluence · 2-hourly SLA · weekly calibration"),
-                           ("Control API", "FastAPI, X-API-Key, manual scans, job control"), ("GitHub webhooks", "push · pull_request closed · advisories, HMAC-verified")])
-        + layer("Redis (broker, results, locks)", [("scanning", "CVE feed, SBOM, matcher"), ("remediation", "one LangGraph run per job"), ("notifications", "SLA escalation"), ("audit", "Confluence / JIRA sync, calibration")])
-        + layer("Workers (Celery)", [("Detection", "sync_cves → store → triage → match → enqueue"), ("Fix agent", "LangGraph graph, checkpointed per step, under a per-repo lock"), ("Tracking", "audit flush follow-ups, escalation")])
-        + layer("State and storage", [("PostgreSQL 16", "app tables, LangGraph checkpoints, audit trail"), ("S3 / MinIO", "versioned SBOM archive"), ("Docker", "hardened, throw-away sandboxes")])
-        + layer("External services", [("NVD · OSV · PyPI", "public feeds"), ("GitHub", "clone, PRs, code search"), ("Internal LLM", "OpenAI-compatible, JSON mode"),
-                                      ("JIRA · Confluence", "Atlassian Cloud REST"), ("Teams · PagerDuty · SMTP", "notifications")])
-    )
     steps = [
         "<b>06:00 UTC</b> <code>scan.sync_cves</code> reads NVD changes since the saved cursor, enriches each with OSV, and stores the ones that touch a supported ecosystem.",
         "<b>02:00 UTC</b> <code>scan.regenerate_sboms</code> syncs the organisation's repositories, then queues one <code>scan.generate_sbom</code> per in-scope repo (shallow clone, Syft, archive to S3, row in PostgreSQL).",
@@ -99,7 +91,7 @@ def architecture(f: dict[str, Any]) -> str:
     ]
     return section("architecture", "Architecture", f"""
 <p>Two cooperating pipelines share one database. The <b>detection pipeline</b> is ordinary Celery code. The <b>fix agent</b> is a LangGraph state machine that runs once per CVE and repository.</p>
-<div class="layers">{layers}</div>
+{DG.architecture()}
 <h3>End-to-end flow</h3>
 <ol>{"".join(f"<li>{s}</li>" for s in steps)}</ol>
 <h3>Technology (installed versions)</h3>
@@ -109,9 +101,6 @@ def architecture(f: dict[str, Any]) -> str:
 
 
 def agent(f: dict[str, Any]) -> str:
-    graph = flow([("assemble_context", ""), ("assess_reachability", ""), ("generate_fix", "io"), ("score_confidence", ""), ("run_sandbox", "sb"), ("run_pre_tests", "sb"),
-                  ("apply_patch", "sb"), ("resolve_dependencies", "sb"), ("run_post_tests", "sb"), ("run_security_scan", "sb"), ("cleanup_sandbox", ""),
-                  ("create_pr", "io"), ("notify_owners", ""), ("write_audit", "")])
     nodes = [
         ["assemble_context", "context_assembler.py", "Loads the CVE facts, <b>rejects a target version that is not an advisory fix</b> (supply-chain check), fetches the manifest, finds importing source files by code search (10 at most) and the release notes. Redacts secrets, then fits <code>LLM_CONTEXT_MAX_TOKENS</code>: CVE facts and manifest are never cut, source files next, changelog last.", "context_payload, context_token_count"],
         ["assess_reachability", "reachability.py", "pip only: AST scan of the fetched files for imports of the package. Concludes <i>unreachable</i> only when certain (direct dependency, complete search, no dynamic imports, no parse errors). <code>enforce</code> ends the job as NOT_REACHABLE; <code>advisory</code> annotates the PR.", "reachable, reachability_evidence"],
@@ -152,8 +141,7 @@ def agent(f: dict[str, Any]) -> str:
     return section("agent", "The fix agent", f"""
 <p>Defined in <code>src/agent/graph.py</code>. State is a Pydantic model (<code>AgentState</code>) checkpointed to PostgreSQL after every step with <code>thread_id = job_id</code>.
 Dashed nodes run inside the sandbox.</p>
-{graph}
-<div class="flowkey">Blue = talks to an external system (LLM, GitHub). Dashed = needs the sandbox. <code>handle_error</code> always leads to <code>cleanup_sandbox</code>, and every terminal path ends in <code>write_audit</code>.</div>
+{DG.agent()}
 <h3>The repair loop</h3>
 <p>This is what makes it an agent rather than a one-shot prompt. When the patch does not apply, dependencies do not resolve, tests regress, or the scanner still sees the CVE, the failing node records the reason and the router sends the run back to <code>generate_fix</code>.
 The next prompt carries the previous attempts and their failure output (as untrusted data). The sandbox is reused and reset (<code>git checkout -- . && git clean -fd</code>). The limit is <code>MAX_FIX_ATTEMPTS</code> (default 3); after that the job ends BLOCKED and no PR is raised.</p>
@@ -163,6 +151,7 @@ The next prompt carries the previous attempts and their failure output (as untru
 {table(["Function", "Rule"], routers, compact=True)}
 <h3>How a run ends</h3>
 {table(["terminal_status", "Meaning", "Job status"], [[code(a), b, code(c)] for a, b, c in terminal], compact=True)}
+{DG.lifecycle()}
 <h3>Confidence score</h3>
 {table(["Component", "Max", "How it is computed"], score, compact=True, num_cols={1})}
 <p>Tiers shown in the PR: <b>HIGH ≥ 85</b>, <b>MEDIUM ≥ 70</b>, otherwise LOW. These cut-offs are my own defaults (the spec names the tiers but not the numbers); the weekly calibration moves them once 30 reviewed PRs exist.</p>

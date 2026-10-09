@@ -70,3 +70,20 @@ def test_standalone_wrapper_is_a_complete_document(page):
     head = doc[doc.index("<head>"):doc.index("</head>")]
     assert "<title>" in head and "<style>" in head and "fonts.googleapis.com" in head  # not stranded in <body>
     assert "<script>" not in head and doc.index("</head>") < doc.index('<div class="shell">')
+
+
+def test_diagrams_are_well_formed_and_accessible(page):
+    import xml.etree.ElementTree as ET
+
+    svgs = re.findall(r"<svg class=\"dg\".*?</svg>", page, flags=re.S)
+    assert len(svgs) >= 7, "expected the overview, architecture, detection, agent, sandbox, lifecycle and feedback diagrams"
+    for svg in svgs:
+        root = ET.fromstring(svg)  # raises on malformed markup
+        ns = "{http://www.w3.org/2000/svg}"
+        assert root.find(f"{ns}title") is not None and root.find(f"{ns}desc") is not None
+        ids = [m.get("id") for m in root.iter(f"{ns}marker")]
+        used = set(re.findall(r"url\(#([^)]+)\)", svg))
+        assert used <= set(ids), f"arrow marker without a definition: {used - set(ids)}"
+    uids = re.findall(r"<title id=\"([^\"]+)\"", page)
+    assert len(uids) == len(set(uids)), "diagram ids must be unique across the page"
+    assert page.count("<figcaption>") == page.count('<figure class="figure">')

@@ -18,11 +18,12 @@ from pathlib import Path
 from scripts import handover_a as A
 from scripts import handover_b as B
 from scripts import handover_c as C
+from scripts import handover_example as E
 from scripts.handover_assets import CSS, FONTS, JS
 from scripts.handover_lib import ROOT, esc, gather
 
 NAV = [
-    ("Orientation", [("status", "Status"), ("architecture", "Architecture")]),
+    ("Orientation", [("overview", "What we are building"), ("status", "Status"), ("architecture", "Architecture"), ("example", "One CVE, end to end")]),
     ("How it works", [("agent", "The fix agent"), ("detection", "Detection pipeline"), ("services", "Services"), ("workers", "Workers and scheduling"),
                       ("api", "Control API"), ("data", "Data model"), ("config", "Configuration")]),
     ("Quality and safety", [("security", "Security model"), ("testing", "Testing and gates")]),
@@ -43,7 +44,7 @@ def build(suite: str) -> str:
     f = gather()
     today = datetime.now(timezone.utc).strftime("%d %B %Y")
     sections = [
-        A.status(f), A.architecture(f), A.agent(f), B.pipeline(f), B.services(), B.workers(f), B.api(f), B.data(f), B.config(f),
+        E.overview(), A.status(f), A.architecture(f), E.example(f), A.agent(f), B.pipeline(f), B.services(), B.workers(f), B.api(f), B.data(f), B.config(f),
         C.security(), C.testing(f), C.setup(), C.runbook(), C.howto(), C.decisions(), C.risks(), C.backlog(), C.repo_map(), C.glossary(),
     ]
     ids = re.findall(r'<section id="([^"]+)"', "".join(sections))

@@ -4,7 +4,8 @@ from __future__ import annotations
 
 from typing import Any
 
-from scripts.handover_lib import callout, chip, code, esc, flow, pre, section, table, ul
+from scripts import handover_diagrams as DG
+from scripts.handover_lib import callout, chip, code, esc, pre, section, table, ul
 
 
 def pipeline(f: dict[str, Any]) -> str:
@@ -16,6 +17,7 @@ def pipeline(f: dict[str, Any]) -> str:
         ["<code>QUEUED</code> for more than 6 hours", "re-queue", "The broker message was lost; recover it."],
     ]
     return section("detection", "Detection pipeline", f"""
+{DG.detection()}
 <h3>1 · CVE feed <span class="muted">src/services/cve_aggregator/, src/services/pipeline.py</span></h3>
 {ul([
     "<code>sync_cves</code> reads NVD CVEs <i>modified</i> since the cursor stored in <code>sync_state['cve_sync']</code> (first run: last 24 hours; each run re-reads 10 minutes before the cursor; windows are split at 119 days because NVD refuses more than 120).",
@@ -61,6 +63,7 @@ def services() -> str:
     ]
     return section("services", "Services", f"""
 <h3>Sandbox <span class="muted">src/services/sandbox/</span></h3>
+{DG.sandbox()}
 {table(["Control", "Setting"], sandbox, compact=True)}
 {ul([
     "<b>Image:</b> <code>docker/sandbox/python.Dockerfile</code> is <code>python:3.12-slim</code> plus git and a checksum-verified Grype whose vulnerability database is baked in (about 4.2 GB). The scanner runs with database updates off, so <b>rebuild the image regularly</b>; a stale image silently misses new CVEs.",
@@ -90,6 +93,7 @@ def services() -> str:
     "Status changes use <code>JIRA_STATUS_TRANSITIONS</code> (job status → JIRA status name, matched against transition and destination names). Your workflow's names must match.",
 ])}
 <h3>Confidence calibration <span class="muted">src/services/calibration.py, src/services/pr_outcomes.py</span></h3>
+{DG.feedback()}
 <p>The <code>pull_request closed</code> webhook records <code>MERGED_CLEAN</code>, <code>MERGED_EDITED</code> (more than one commit, so a human added to the branch) or <code>CLOSED_UNMERGED</code> in <code>pr_outcomes</code> next to the score the PR was raised with. A closed-unmerged PR marks the job <code>BLOCKED</code> so it is never raised again. A PR is attributed to a job only if the branch prefix, the body marker, the repository <i>and</i> the PR number all match (a pasted marker alone is not trusted). Weekly, <code>audit.recalibrate_confidence</code> moves the HIGH and MEDIUM cut-offs to the lowest scores whose own band was merged clean at least 90% and 70% of the time. It needs 30 reviewed PRs and 10 per band, and keeps the defaults otherwise.</p>""")
 
 

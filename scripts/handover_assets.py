@@ -46,7 +46,7 @@ body { background: var(--bg); color: var(--ink); font-family: var(--font-body); 
 a { color: var(--accent); text-underline-offset: 2px; }
 a:focus-visible, button:focus-visible, input:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
 
-.shell { max-width: 1240px; margin: 0 auto; padding-inline: 16px; padding-block: 0 4rem; display: grid; grid-template-columns: 15.5rem minmax(0, 1fr); gap: 3rem; }
+.shell { max-width: 1560px; margin: 0 auto; padding-inline: 16px; padding-block: 0 4rem; display: grid; grid-template-columns: 14.5rem minmax(0, 1fr); gap: 2.4rem; }
 .rail { position: sticky; top: env(safe-area-inset-top, 0px); align-self: start; max-height: 100vh; overflow-y: auto; padding-block: 1.5rem; font-size: 13px; }
 .rail .brand { font-weight: 600; font-size: 14px; letter-spacing: .01em; margin-bottom: .15rem; }
 .rail .sub { color: var(--muted); font-size: 12px; margin-bottom: 1.1rem; }
@@ -61,7 +61,8 @@ header.hero { padding-bottom: 1.75rem; border-bottom: 1px solid var(--line); mar
 .hero .kicker { font-family: var(--font-mono); font-size: 12px; color: var(--muted); letter-spacing: .02em; }
 .hero h1 { font-size: clamp(1.9rem, 4vw, 2.7rem); line-height: 1.12; letter-spacing: -.02em; font-weight: 600; margin: .35rem 0 .75rem; text-wrap: balance; }
 .hero p.lede { font-size: 1.08rem; max-width: 46rem; color: var(--ink); margin: 0 0 1.25rem; }
-.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr)); gap: .6rem; margin-top: 1.25rem; }
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .6rem; margin-top: 1.25rem; }
+@media (max-width: 700px) { .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .stat { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: .6rem .8rem; }
 .stat b { display: block; font-size: 1.35rem; font-weight: 600; font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
 .stat span { font-size: 12px; color: var(--muted); }
@@ -140,7 +141,57 @@ footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--line);
 .tree .d { font-weight: 500; }
 .tree .c { color: var(--muted); font-family: var(--font-body); font-size: 12.5px; }
 
+/* ---- worked example: a genuine sequence, so numbers are information ---- */
+ol.steps { list-style: none; counter-reset: step; padding: 0; margin: 1rem 0; max-width: 52rem; }
+ol.steps > li { counter-increment: step; position: relative; padding: 0 0 1.15rem 2.6rem; margin: 0; }
+ol.steps > li::before { content: counter(step); position: absolute; left: 0; top: 0; width: 1.7rem; height: 1.7rem; border-radius: 50%; background: var(--accent); color: var(--surface); font: 600 12px var(--font-body); display: grid; place-items: center; }
+ol.steps > li::after { content: ""; position: absolute; left: .84rem; top: 1.9rem; bottom: .15rem; width: 1px; background: var(--line); }
+ol.steps > li:last-child::after { display: none; }
+.stepbody { margin-top: .15rem; }
+.stepbody pre { font-size: 12px; }
+/* ---- diagrams (inline SVG; every color is a page token, so they follow light/dark) ---- */
+.figure { position: relative; margin: 1.1rem 0 1.4rem; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: .9rem 1rem 1rem; max-width: 100%; }
+.figscroll { overflow-x: auto; }
+.figure figcaption { font-size: 13.5px; margin-top: .6rem; max-width: 52rem; }
+.figure .how { font-size: 12.5px; color: var(--muted); margin: .35rem 0 0; max-width: 52rem; }
+svg.dg { display: block; width: 100%; height: auto; }
+.zoombtn { position: absolute; top: .55rem; right: .7rem; z-index: 1; font: 500 11.5px var(--font-body); background: var(--surface); color: var(--muted); border: 1px solid var(--line); border-radius: 5px; padding: .2rem .6rem; cursor: pointer; }
+.zoombtn:hover { color: var(--ink); border-color: var(--muted); }
+dialog.zoom { width: min(96vw, 1500px); max-width: none; max-height: 92vh; padding: 1rem 1.1rem 1.1rem; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); overflow: auto; }
+dialog.zoom::backdrop { background: rgba(8, 12, 10, .62); }
+dialog.zoom .zoomhead { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; margin-bottom: .6rem; }
+dialog.zoom .zoomhead b { font-size: 1rem; }
+dialog.zoom button { font: 500 12px var(--font-body); background: var(--surface-2); color: var(--ink); border: 1px solid var(--line); border-radius: 5px; padding: .25rem .7rem; cursor: pointer; }
+dialog.zoom svg.dg { width: auto; max-width: none; }
+.dg-group { fill: var(--surface-2); fill-opacity: .55; stroke: var(--line); stroke-width: 1; }
+.dg-group.sb { fill-opacity: .25; stroke: var(--muted); stroke-dasharray: 5 4; }
+.dg-box { fill: var(--surface); stroke: var(--line); stroke-width: 1.2; }
+.dg-box.io { fill: var(--accent-soft); stroke: transparent; }
+.dg-box.ok { fill: var(--done-bg); stroke: transparent; }
+.dg-box.warn { fill: var(--partial-bg); stroke: transparent; }
+.dg-box.bad { fill: var(--todo-bg); stroke: transparent; }
+.dg-box.mute { fill: var(--surface-2); stroke: transparent; }
+.dg-box.sb { stroke: var(--muted); stroke-dasharray: 4 3; }
+.dg-t { fill: var(--ink); font: 600 12.5px var(--font-body); }
+.dg-t.dg-mono { font: 500 12px var(--font-mono); }
+.dg-s { fill: var(--muted); font: 400 10.5px var(--font-body); }
+.dg-tag { fill: var(--todo); font: 500 9.5px var(--font-body); }
+.dg-h { fill: var(--muted); font: 600 10.5px var(--font-body); letter-spacing: .08em; text-transform: uppercase; }
+.dg-lbl { fill: var(--ink); font: 500 10.5px var(--font-body); paint-order: stroke; stroke: var(--surface); stroke-width: 4px; stroke-linejoin: round; }
+.dg-badge { fill: var(--accent); }
+.dg-badge-t { fill: var(--surface); font: 600 11.5px var(--font-body); }
+.dg-line { stroke: var(--muted); stroke-width: 1.5; fill: none; stroke-linejoin: round; }
+.dg-line.loop { stroke: var(--todo); stroke-dasharray: 6 4; }
+.dg-line.soft { stroke-dasharray: 3 3; }
+.dg-line.good { stroke: var(--done); }
+.dg-line.block { stroke: var(--todo); }
+.dg-head { fill: var(--muted); }
+.dg-head.loop { fill: var(--todo); }
+.dg-head.good { fill: var(--done); }
+.dg-cross { stroke: var(--todo); stroke-width: 2.4; stroke-linecap: round; fill: none; }
+
 @media (max-width: 900px) {
+  svg.dg { min-width: var(--dg-min, 720px); }
   .shell { grid-template-columns: minmax(0, 1fr); gap: 0; }
   .rail { display: none; }
   .rail-mobile { display: block; position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line); padding: .5rem 0; margin-inline: -16px; padding-inline: 16px; }
@@ -185,6 +236,27 @@ JS = r"""
     });
     pre.appendChild(b);
   });
+  // Enlarge a diagram: show it at its natural size in a scrollable dialog.
+  if (typeof HTMLDialogElement === 'function') {
+    var dlg = document.createElement('dialog'); dlg.className = 'zoom';
+    dlg.innerHTML = '<div class="zoomhead"><b></b><button type="button">Close</button></div><div class="zoombody"></div>';
+    document.body.appendChild(dlg);
+    dlg.querySelector('button').addEventListener('click', function () { dlg.close(); });
+    dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
+    document.querySelectorAll('figure.figure').forEach(function (fig) {
+      var btn = fig.querySelector('.zoombtn'); var svg = fig.querySelector('svg.dg');
+      if (!btn || !svg) return;
+      btn.addEventListener('click', function () {
+        var clone = svg.cloneNode(true); var vb = svg.viewBox.baseVal;
+        clone.style.width = vb.width + 'px'; clone.style.minWidth = '0';
+        dlg.querySelector('b').textContent = svg.querySelector('title').textContent;
+        var body = dlg.querySelector('.zoombody'); body.innerHTML = ''; body.appendChild(clone);
+        dlg.showModal();
+      });
+    });
+  } else {
+    document.querySelectorAll('.zoombtn').forEach(function (b) { b.hidden = true; });
+  }
   // Live filter for any table marked data-filterable (the settings catalogue).
   document.querySelectorAll('input[data-filter-for]').forEach(function (input) {
     var rows = Array.prototype.slice.call(document.querySelectorAll('#' + input.getAttribute('data-filter-for') + ' tbody tr'));
