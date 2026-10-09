@@ -1,0 +1,10 @@
+name: not_reachable
+description: The vulnerable package is declared but never imported; in enforce mode the job ends without calling the LLM.
+settings: {REACHABILITY_MODE: enforce}
+cve: {cve_id: CVE-2024-35195, cvss: 5.6, severity: MEDIUM, ecosystem: pip, package: requests,
+      affected_versions: ["< 2.32.0"], fixed_version: "2.32.0", description: "verify=False persists on Sessions."}
+job: {installed_version: "2.31.0", target_version: "2.32.0", manifest_file_path: requirements.txt}
+expect:
+  terminal_status: NOT_REACHABLE
+  no_pr: true
+  llm_calls_max: 0

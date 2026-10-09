@@ -1,0 +1,11 @@
+name: bump_certifi
+description: HIGH severity, CalVer-style version numbers (CVE-2023-37920, certifi 2023.5.7 -> 2023.7.22).
+cve: {cve_id: CVE-2023-37920, cvss: 7.5, severity: HIGH, ecosystem: pip, package: certifi,
+      affected_versions: ["< 2023.7.22"], fixed_version: "2023.7.22",
+      description: "certifi removed e-Tugra root certificates after finding problems with the e-Tugra certificate authority."}
+job: {installed_version: "2023.5.7", target_version: "2023.7.22", manifest_file_path: requirements.txt}
+expect:
+  terminal_status: PR_RAISED
+  files_changed: [requirements.txt]
+  max_diff_lines: 2
+  scanner_resolved: true

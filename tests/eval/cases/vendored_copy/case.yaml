@@ -1,0 +1,11 @@
+name: vendored_copy
+description: The bump installs and tests pass, but a vendored copy of the vulnerable release remains in the repo - only the scanner can see it.
+replay_only: true
+cve: {cve_id: CVE-2024-35195, cvss: 5.6, severity: MEDIUM, ecosystem: pip, package: requests,
+      affected_versions: ["< 2.32.0"], fixed_version: "2.32.0", description: "verify=False persists on Sessions."}
+job: {installed_version: "2.31.0", target_version: "2.32.0", manifest_file_path: requirements.txt}
+expect:
+  terminal_status: BLOCKED
+  max_attempts: 3
+  no_pr: true
+  failure_contains: "still reported by the scanner"

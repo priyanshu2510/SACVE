@@ -1,0 +1,19 @@
+{
+  "id": "GHSA-xr7r-f8xq-vfvv",
+  "aliases": ["CVE-2024-21626"],
+  "summary": "runc container breakout through process.cwd trickery and leaked fds",
+  "details": "In runc 1.1.11 and earlier, due to an internal file descriptor leak, an attacker could cause a newly-spawned container process to have a working directory in the host filesystem namespace.",
+  "published": "2024-01-31T18:39:47Z",
+  "affected": [
+    {
+      "package": {"ecosystem": "Go", "name": "github.com/opencontainers/runc"},
+      "ranges": [
+        {"type": "SEMVER", "events": [{"introduced": "0.0.0-rc93"}, {"fixed": "1.1.12"}]}
+      ]
+    },
+    {
+      "package": {"ecosystem": "crates.io", "name": "not-supported"},
+      "ranges": [{"type": "SEMVER", "events": [{"introduced": "0"}, {"fixed": "9.9.9"}]}]
+    }
+  ]
+}

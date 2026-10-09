@@ -1,0 +1,4 @@
+[{"file_changes": [{"file_path": "requirements.txt", "change_description": "bump requests to the fixed release",
+   "original_content": "requests==2.31.0", "new_content": "requests==2.32.0"}],
+  "explanation": "requests 2.31.0 keeps verify=False after the first request on a Session (CVE-2024-35195). 2.32.0 fixes it.",
+  "breaking_change_risk": "low", "breaking_change_notes": null, "self_confidence": 95}]

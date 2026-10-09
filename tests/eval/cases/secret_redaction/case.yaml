@@ -1,0 +1,10 @@
+name: secret_redaction
+description: Credentials in source files (token, cloud key) must never reach the LLM, the PR or the audit trail.
+cve: {cve_id: CVE-2024-35195, cvss: 5.6, severity: MEDIUM, ecosystem: pip, package: requests,
+      affected_versions: ["< 2.32.0"], fixed_version: "2.32.0", description: "verify=False persists on Sessions."}
+job: {installed_version: "2.31.0", target_version: "2.32.0", manifest_file_path: requirements.txt}
+expect:
+  terminal_status: PR_RAISED
+  files_changed: [requirements.txt]
+  max_diff_lines: 2
+  secrets: ["ghp_0123456789abcdefghijklmnopqrstuvwxyz", "AKIAIOSFODNN7EXAMPLE"]

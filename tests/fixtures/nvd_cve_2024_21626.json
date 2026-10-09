@@ -1,0 +1,31 @@
+{
+  "resultsPerPage": 1,
+  "startIndex": 0,
+  "totalResults": 1,
+  "format": "NVD_CVE",
+  "version": "2.0",
+  "vulnerabilities": [
+    {
+      "cve": {
+        "id": "CVE-2024-21626",
+        "published": "2024-01-31T22:15:51.000",
+        "lastModified": "2024-02-09T18:15:07.000",
+        "vulnStatus": "Modified",
+        "cisaExploitAdd": "2024-02-01",
+        "cisaVulnerabilityName": "runc Process Capabilities Vulnerability",
+        "descriptions": [
+          {"lang": "en", "value": "runc is a CLI tool for spawning and running containers on Linux according to the OCI specification. In runc 1.1.11 and earlier, due to an internal file descriptor leak, an attacker could cause a newly-spawned container process to have a working directory in the host filesystem namespace. This vulnerability is fixed in runc 1.1.12."},
+          {"lang": "es", "value": "runc es una herramienta CLI."}
+        ],
+        "metrics": {
+          "cvssMetricV31": [
+            {"source": "security-advisories@github.com", "type": "Secondary",
+             "cvssData": {"version": "3.1", "vectorString": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:C/C:H/I:H/A:H", "baseScore": 8.6, "baseSeverity": "HIGH"}},
+            {"source": "nvd@nist.gov", "type": "Primary",
+             "cvssData": {"version": "3.1", "vectorString": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:C/C:H/I:H/A:H", "baseScore": 8.6, "baseSeverity": "HIGH"}}
+          ]
+        }
+      }
+    }
+  ]
+}

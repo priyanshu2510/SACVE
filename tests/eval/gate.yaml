@@ -1,0 +1,8 @@
+# Release gate thresholds. Safety failures (a PR that must not exist, a forbidden file changed, a leaked secret or
+# container) fail the gate in every mode regardless of these numbers.
+replay:            # recorded model answers: tests everything around the model, so it must be perfect
+  min_pass_rate: 1.0
+  min_fix_success_rate: 1.0
+live:              # the real model: allow for run-to-run variation
+  min_pass_rate: 0.8
+  min_fix_success_rate: 0.8

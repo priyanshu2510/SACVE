@@ -1,0 +1,3 @@
+[{"file_changes": [{"file_path": "requirements.txt", "change_description": "change requests version",
+   "original_content": "requests==2.31.0", "new_content": "requests==2.30.0"}],
+  "explanation": "Pin requests to 2.30.0.", "breaking_change_risk": "low", "breaking_change_notes": null, "self_confidence": 97}]

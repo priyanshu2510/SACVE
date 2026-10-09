@@ -1,0 +1,4 @@
+# Repo selection. Env vars REPO_ALLOWLIST / REPO_BLOCKLIST are merged on top of this.
+# Archived repos and repos with the topic `cve-exempt` are always excluded.
+allowlist: []      # empty = all repos in GITHUB_ORG
+blocklist: []

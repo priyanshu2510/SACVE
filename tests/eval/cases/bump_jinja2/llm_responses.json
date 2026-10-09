@@ -1,0 +1,4 @@
+[{"file_changes": [{"file_path": "requirements.txt", "change_description": "bump Jinja2 to 3.1.3",
+   "original_content": "Jinja2==3.1.2", "new_content": "Jinja2==3.1.3"}],
+  "explanation": "Jinja2 3.1.2 allows XSS through the xmlattr filter with keys containing spaces (CVE-2024-22195); 3.1.3 fixes it.",
+  "breaking_change_risk": "low", "breaking_change_notes": null, "self_confidence": 92}]

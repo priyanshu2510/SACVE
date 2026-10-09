@@ -1,0 +1,4 @@
+[{"file_changes": [{"file_path": "requirements.txt", "change_description": "bump certifi to 2023.7.22",
+   "original_content": "certifi==2023.5.7", "new_content": "certifi==2023.7.22"}],
+  "explanation": "certifi before 2023.7.22 still trusts the e-Tugra root certificates (CVE-2023-37920); 2023.7.22 removes them.",
+  "breaking_change_risk": "low", "breaking_change_notes": null, "self_confidence": 91}]

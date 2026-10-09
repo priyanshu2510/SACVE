@@ -1,0 +1,10 @@
+{
+  "id": "CVE-2024-21626",
+  "aliases": ["GHSA-xr7r-f8xq-vfvv", "GO-2024-2491"],
+  "related": ["ALSA-2024:0670", "SUSE-SU-2024:0294-1"],
+  "details": "runc is a CLI tool for spawning and running containers on Linux according to the OCI specification.",
+  "affected": [
+    {"ranges": [{"type": "GIT", "repo": "https://github.com/opencontainers/runc",
+                 "events": [{"introduced": "12644e614e25b05da6fd08a38ffa0cfe1903fdec"}, {"fixed": "51d5e94601ceffbbd85688df1c928ecccbfa4685"}]}]}
+  ]
+}

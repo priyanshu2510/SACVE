@@ -1,0 +1,11 @@
+name: bump_jinja2
+description: Package-name casing differs between manifest (Jinja2) and advisory (jinja2).
+cve: {cve_id: CVE-2024-22195, cvss: 5.4, severity: MEDIUM, ecosystem: pip, package: jinja2,
+      affected_versions: ["< 3.1.3"], fixed_version: "3.1.3",
+      description: "The xmlattr filter accepts keys with spaces, allowing attribute injection (XSS) when attacker-controlled keys are rendered."}
+job: {installed_version: "3.1.2", target_version: "3.1.3", manifest_file_path: requirements.txt}
+expect:
+  terminal_status: PR_RAISED
+  files_changed: [requirements.txt]
+  max_diff_lines: 2
+  scanner_resolved: true

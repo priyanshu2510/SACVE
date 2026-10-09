@@ -1,0 +1,18 @@
+{
+  "id": "PYSEC-2099-1",
+  "aliases": ["CVE-2099-0001"],
+  "summary": "Example multi-branch fix",
+  "affected": [
+    {
+      "package": {"ecosystem": "PyPI", "name": "examplepkg"},
+      "ranges": [
+        {"type": "ECOSYSTEM", "events": [{"introduced": "0"}, {"fixed": "1.4.9"}, {"introduced": "2.0.0"}, {"fixed": "2.0.3"}]},
+        {"type": "GIT", "repo": "https://example.com/r.git", "events": [{"introduced": "0"}, {"fixed": "abc123"}]}
+      ]
+    },
+    {
+      "package": {"ecosystem": "PyPI", "name": "examplepkg"},
+      "ranges": [{"type": "ECOSYSTEM", "events": [{"introduced": "3.0.0"}, {"last_affected": "3.1.0"}]}]
+    }
+  ]
+}
